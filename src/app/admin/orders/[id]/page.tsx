@@ -4,9 +4,9 @@ import { fetcher } from "@/lib/axios";
 import { ApiResponse, ApiResponseSingle, Order, Product, User } from "@/types";
 
 interface OrderPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function OrderPage({ params }: OrderPageProps) {

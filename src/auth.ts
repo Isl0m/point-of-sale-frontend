@@ -2,6 +2,7 @@ import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { fetcher } from "./lib/axios";
+import { User } from "./types";
 
 export const userSchema = z.object({
   username: z.string().min(1, "Username is required"),
