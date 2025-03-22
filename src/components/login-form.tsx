@@ -74,6 +74,7 @@ export default function LoginForm() {
                     id={field.name}
                     name={field.name}
                     value={field.state.value}
+                    type="password"
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Password"
                   />
