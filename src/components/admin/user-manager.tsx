@@ -45,15 +45,6 @@ import { z } from "zod";
 import { queryClient } from "../query-provider";
 import { queryOpts } from "./queries";
 
-// Sample data
-const initialUsers: User[] = [
-  { id: 1, fullName: "John Doe", username: "john.doe", role: "ADMIN" },
-  { id: 2, fullName: "Jane Smith", username: "jane.smith", role: "MANAGER" },
-  { id: 3, fullName: "Bob Johnson", username: "bob.j", role: "STAFF" },
-  { id: 4, fullName: "Alice Brown", username: "alice.b", role: "STAFF" },
-  { id: 5, fullName: "Charlie Wilson", username: "charlie.w", role: "MANAGER" },
-];
-
 const userSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters long"),
   username: z

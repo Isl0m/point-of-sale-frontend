@@ -94,7 +94,7 @@ export function OrderDetails({ order, user, products }: OrderDetailsProps) {
 
     setIsUpdating(true);
     try {
-      await fetcher.post(`/api/order/${order.id}`, {
+      await fetcher.put(`/api/order/${order.id}`, {
         status: newStatus,
       });
       toast.success(`Order status has been updated to ${newStatus}`);

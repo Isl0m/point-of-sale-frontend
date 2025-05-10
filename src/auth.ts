@@ -49,7 +49,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const response = (await fetcher.post("/api/user/login", data)).data;
           const user = response.data as DbUser | null;
           if (!user) return null;
-          console.log("user", user);
           return {
             name: user.fullName,
             username: user.username,

@@ -38,7 +38,7 @@ interface OrderItem {
   createdAt: string;
 }
 
-export type OrderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "CANCELLED";
+export type OrderStatus = "PENDING" | "COMPLETED" | "CANCELLED";
 
 export type Order = {
   id: number;
