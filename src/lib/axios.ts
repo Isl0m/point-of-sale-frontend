@@ -6,7 +6,7 @@ const credentials = btoa(username + ":" + password);
 
 export const fetcher = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  headers: {
-    Authorization: `Basic ${credentials}`,
-  },
+  // headers: {
+  //   Authorization: `Basic ${credentials}`,
+  // },
 });

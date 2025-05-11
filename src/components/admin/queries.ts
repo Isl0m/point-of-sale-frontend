@@ -32,6 +32,7 @@ export const queryOpts = {
     queryFn: async () => {
       const response = await fetcher.get("/api/order/get-all");
       const data = response.data as ApiResponse<Order>;
+      console.log(data);
       return data.data;
     },
   }),

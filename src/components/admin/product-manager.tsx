@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetcher } from "@/lib/axios";
+import { prettyNumbers } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -125,7 +126,7 @@ export function ProductManager() {
                       )?.name
                     }
                   </TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell>${prettyNumbers(product.price)}</TableCell>
                   <TableCell>#{product.serial}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell className="text-right">

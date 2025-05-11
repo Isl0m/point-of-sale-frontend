@@ -2,23 +2,19 @@
 
 import { Statistics } from "@/app/dashboard/page";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpRight,
-  CircleDollarSign,
-  Minus,
-  ShoppingCart,
-} from "lucide-react";
+import { prettyNumbers } from "@/lib/utils";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import {
   Bar,
@@ -94,15 +90,9 @@ const recentOrders = [
 ];
 
 const GrowthIndicator = (indicator: "up" | "down" | "same") => {
-  if (indicator === "up") return <ArrowUp className="mr-1 h-4 w-4" />;
-  if (indicator === "down") return <ArrowDown className="mr-1 h-4 w-4" />;
+  if (indicator === "up") return <TrendingUp className="mr-1 h-4 w-4" />;
+  if (indicator === "down") return <TrendingDown className="mr-1 h-4 w-4" />;
   if (indicator === "same") return <Minus className="mr-1 h-4 w-4" />;
-};
-
-const indicatorColor = (indicator: "up" | "down" | "same") => {
-  if (indicator === "up") return "text-green-600";
-  if (indicator === "down") return "text-red-600";
-  if (indicator === "same") return "text-grey-600";
 };
 
 export function DashboardStats({ statistics }: { statistics: Statistics }) {
@@ -125,89 +115,70 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between space-y-0">
-              <p className="text-sm font-medium text-muted-foreground">
-                Total Revenue
-              </p>
-              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold">
-                ${Number(statistics.revenue.total_revenue)}
-              </h3>
-              <div
-                className={cn(
-                  "flex items-center text-sm",
-                  indicatorColor(statistics.revenue.indicator),
-                )}
-              >
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 md:grid-cols-3 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs">
+        <Card className="@container/card">
+          <CardHeader>
+            <CardDescription>Total Revenue</CardDescription>
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              ${prettyNumbers(Number(statistics.revenue.total_revenue))}
+            </CardTitle>
+            <CardAction>
+              <Badge variant="outline">
                 {GrowthIndicator(statistics.revenue.indicator)}
-                <span>{Number(statistics.revenue.revenue_growth)}%</span>
-              </div>
+                {Number(statistics.revenue.revenue_growth)}%
+              </Badge>
+            </CardAction>
+          </CardHeader>
+          <CardFooter className="flex-col items-start gap-1.5 text-sm">
+            <div className="line-clamp-1 flex gap-2 font-medium">
+              Trending {statistics.revenue.indicator} this month{" "}
+              {GrowthIndicator(statistics.revenue.indicator)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Compared to last month
-            </p>
-          </CardContent>
+            <div className="text-muted-foreground">Compared to last month</div>
+          </CardFooter>
         </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between space-y-0">
-              <p className="text-sm font-medium text-muted-foreground">
-                Sales Today
-              </p>
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold">
-                ${Number(statistics.sales.sales_today)}
-              </h3>
-              <div
-                className={cn(
-                  "flex items-center text-sm",
-                  indicatorColor(statistics.sales.indicator),
-                )}
-              >
+        <Card className="@container/card">
+          <CardHeader>
+            <CardDescription>Sales Today</CardDescription>
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              ${prettyNumbers(Number(statistics.sales.sales_today))}
+            </CardTitle>
+            <CardAction>
+              <Badge variant="outline">
                 {GrowthIndicator(statistics.sales.indicator)}
-                <span>{Number(statistics.sales.sales_growth)}%</span>
-              </div>
+                {Number(statistics.sales.sales_growth)}%
+              </Badge>
+            </CardAction>
+          </CardHeader>
+          <CardFooter className="flex-col items-start gap-1.5 text-sm">
+            <div className="line-clamp-1 flex gap-2 font-medium">
+              Trending {statistics.sales.indicator} this month{" "}
+              {GrowthIndicator(statistics.sales.indicator)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Compared to yesterday
-            </p>
-          </CardContent>
+            <div className="text-muted-foreground">Compared to yesterday</div>
+          </CardFooter>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between space-y-0">
-              <p className="text-sm font-medium text-muted-foreground">
-                Total Orders
-              </p>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold">
-                {Number(statistics.orders.total_orders)}
-              </h3>
-              <div
-                className={cn(
-                  "flex items-center text-sm",
-                  indicatorColor(statistics.orders.indicator),
-                )}
-              >
+        <Card className="@container/card">
+          <CardHeader>
+            <CardDescription>Total Orders</CardDescription>
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              ${prettyNumbers(Number(statistics.orders.total_orders))}
+            </CardTitle>
+            <CardAction>
+              <Badge variant="outline">
                 {GrowthIndicator(statistics.orders.indicator)}
-                <span>{Number(statistics.orders.orders_growth)}%</span>
-              </div>
+                {Number(statistics.orders.orders_growth)}%
+              </Badge>
+            </CardAction>
+          </CardHeader>
+          <CardFooter className="flex-col items-start gap-1.5 text-sm">
+            <div className="line-clamp-1 flex gap-2 font-medium">
+              Trending {statistics.orders.indicator} this month{" "}
+              {GrowthIndicator(statistics.orders.indicator)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Compared to last month
-            </p>
-          </CardContent>
+            <div className="text-muted-foreground">Compared to last month</div>
+          </CardFooter>
         </Card>
       </div>
 
@@ -225,7 +196,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
               config={{
                 revenue: {
                   label: "Revenue",
-                  color: "hsl(var(--chart-2))",
+                  color: "var(--chart-1)",
                 },
               }}
             >
@@ -266,7 +237,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
         </Card>
 
         <Card className="col-span-1">
-          <CardHeader className="pb-2">
+          <CardHeader>
             <CardTitle>Sales by Category</CardTitle>
             <CardDescription>
               Distribution of sales across product categories
@@ -277,7 +248,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
               config={{
                 percentage: {
                   label: "Percentage",
-                  color: "hsl(var(--chart-2))",
+                  color: "var(--chart-1)",
                 },
               }}
             >
@@ -300,7 +271,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
                 />
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent className="rounded" />}
+                  content={<ChartTooltipContent />}
                 />
                 <Bar
                   dataKey="percentage"
@@ -324,24 +295,36 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {statistics.topSelling.map((product, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{product.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {product.sales} units
-                    </span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500 rounded-full"
-                      style={{
-                        width: `${(Number(product.sales) / 120) * 100}%`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+              <ChartContainer
+                config={{
+                  sales: {
+                    label: "Sales",
+                    color: "var(--chart-1)",
+                  },
+                }}
+              >
+                <BarChart
+                  accessibilityLayer
+                  data={statistics.topSelling.map(({ name, sales }) => ({
+                    name,
+                    sales: Number(sales),
+                  }))}
+                  layout="vertical"
+                >
+                  <XAxis type="number" dataKey="sales" hide />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Bar dataKey="sales" fill="var(--color-sales)" radius={5} />
+                </BarChart>
+              </ChartContainer>
             </div>
           </CardContent>
         </Card>
@@ -354,22 +337,19 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((order) => (
+              {statistics.recentOrders.map((order) => (
                 <div
                   key={order.id}
                   className="flex items-center justify-between border-b pb-2"
                 >
                   <div>
-                    <p className="font-medium">{order.id}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {order.customer}
-                    </p>
+                    <p className="font-medium">#{order.id}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(order.date).toLocaleDateString()}
+                      {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">${order.total.toFixed(2)}</p>
+                    <p className="font-medium">${prettyNumbers(order.total)}</p>
                     <Badge
                       className={getStatusColor(order.status)}
                       variant="outline"
@@ -379,9 +359,15 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
                   </div>
                 </div>
               ))}
-              <Button variant="outline" className="w-full mt-2">
+              <Link
+                href={"/admin/orders"}
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "w-full mt-2",
+                })}
+              >
                 View All Orders
-              </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

@@ -19,11 +19,7 @@ export default async function OrderPage({ params }: OrderPageProps) {
     .data as ApiResponse<Product>;
 
   return (
-    <AdminLayout currentPage="orders">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Order #{orderId}</h1>
-      </div>
-
+    <AdminLayout title={`Order #${orderId}`}>
       <OrderDetails
         order={order.data}
         user={user.data}

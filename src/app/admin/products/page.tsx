@@ -4,11 +4,7 @@ import { ProductQuickAdd } from "@/components/admin/product-quick-add";
 
 export default function ProductsPage() {
   return (
-    <AdminLayout currentPage="products">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Products</h1>
-      </div>
-
+    <AdminLayout title="Products">
       <div className="mb-6">
         <ProductQuickAdd />
       </div>

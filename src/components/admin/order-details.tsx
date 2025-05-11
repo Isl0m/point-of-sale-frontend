@@ -130,7 +130,6 @@ export function OrderDetails({ order, user, products }: OrderDetailsProps) {
 
         <div className="flex items-center gap-4">
           <div className="text-sm">
-            <span className="text-muted-foreground mr-2">Status:</span>
             <Select
               value={order.status}
               onValueChange={(value: OrderStatus) => handleStatusUpdate(value)}
@@ -209,7 +208,7 @@ export function OrderDetails({ order, user, products }: OrderDetailsProps) {
                   </TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>
                   <TableCell className="text-right">
-                    ${item.price.toFixed(2)}
+                    ${item.price?.toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}

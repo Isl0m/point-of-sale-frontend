@@ -32,7 +32,7 @@ export default function LoginForm() {
   return (
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="space-y-4 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full">
           <ShoppingCart className="h-8 w-8 text-primary" />
         </div>
         <CardTitle className="text-2xl font-bold">POS System</CardTitle>
