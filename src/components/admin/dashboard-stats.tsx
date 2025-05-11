@@ -1,6 +1,6 @@
 "use client";
 
-import { Statistics } from "@/app/dashboard/page";
+import { Statistics } from "@/app/admin/dashboard/page";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
