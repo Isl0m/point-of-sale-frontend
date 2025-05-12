@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetcher } from "@/lib/axios";
-import { ApiResponse, Product, User } from "@/types";
+import { Product } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Minus, Plus, Search, ShoppingCart, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -151,17 +151,14 @@ export function AddOrderForm() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const username = session?.user?.username;
+    const userId = Number(session?.user?.id);
 
     if (!warehouse) {
       toast.error("Please select warehouse");
       return;
     }
 
-    const users = (await fetcher.get(`/api/user/by-username/${username}`))
-      .data as ApiResponse<User>;
-    const [user] = users.data;
-    if (!user) {
+    if (!userId) {
       toast.error("User not found");
       return;
     }
@@ -174,7 +171,7 @@ export function AddOrderForm() {
 
     setIsProcessing(true);
     mutation.mutate({
-      userId: user.id,
+      userId,
       status: "PENDING",
       warehouseId: Number(warehouse),
       items: orderItems.map((item) => ({

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 export default async function Home() {
   const session = await auth();
   if (session) {
-    return redirect("/admin/categories");
+    return redirect("/admin/orders");
   }
   return (
     <main className="min-h-screen flex items-center justify-center p-4">

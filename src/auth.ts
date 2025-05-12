@@ -11,13 +11,7 @@ export const userSchema = z.object({
 
 type AuthResponse = {
   token: string;
-  user: {
-    id: string;
-    fullName: string;
-    username: string;
-    accessToken: string;
-    role: "MANAGER" | "ADMIN" | "STAFF";
-  };
+  user: User & { accessToken: string };
 };
 
 declare module "next-auth" {
@@ -59,6 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const res = response.data as AuthResponse | null;
           if (!res) return null;
           return {
+            id: String(res.user.id),
             name: res.user.fullName,
             username: res.user.username,
             role: res.user.role,
@@ -77,6 +72,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...session,
         user: {
           ...session.user,
+          id: String(token.id),
           username: token.username,
           role: token.role,
           accessToken: token.accessToken,
