@@ -9,13 +9,15 @@ export const userSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-type DbUser = {
-  id: string;
-  fullName: string;
-  username: string;
-  password: string;
-  accessToken: string;
-  role: "MANAGER" | "ADMIN" | "STAFF";
+type AuthResponse = {
+  token: string;
+  user: {
+    id: string;
+    fullName: string;
+    username: string;
+    accessToken: string;
+    role: "MANAGER" | "ADMIN" | "STAFF";
+  };
 };
 
 declare module "next-auth" {
@@ -54,13 +56,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               data,
             )
           ).data;
-          const user = response.data as DbUser | null;
-          if (!user) return null;
+          const res = response.data as AuthResponse | null;
+          if (!res) return null;
           return {
-            name: user.fullName,
-            username: user.username,
-            role: user.role,
-            accessToken: response.data,
+            name: res.user.fullName,
+            username: res.user.username,
+            role: res.user.role,
+            accessToken: res.token,
           };
         } catch (error) {
           console.error("Error parsing user credentials:", error);
