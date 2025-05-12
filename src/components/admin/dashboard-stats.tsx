@@ -1,6 +1,5 @@
 "use client";
 
-import { Statistics } from "@/app/admin/dashboard/page";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -13,9 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { prettyNumbers } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -26,79 +25,19 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+import { Skeleton } from "../ui/skeleton";
+import { queryOpts } from "./queries";
 
-// Sample data for charts
-const salesData = [
-  { name: "Jan", total: 1800 },
-  { name: "Feb", total: 2200 },
-  { name: "Mar", total: 2800 },
-  { name: "Apr", total: 2400 },
-  { name: "May", total: 2900 },
-  { name: "Jun", total: 3500 },
-  { name: "Jul", total: 3200 },
-  { name: "Aug", total: 3800 },
-  { name: "Sep", total: 4200 },
-  { name: "Oct", total: 4500 },
-  { name: "Nov", total: 4800 },
-  { name: "Dec", total: 5200 },
-];
-
-const categorySales = [
-  { name: "Beverages", value: 35, color: "#4F46E5" },
-  { name: "Bakery", value: 25, color: "#10B981" },
-  { name: "Dairy", value: 15, color: "#F59E0B" },
-  { name: "Produce", value: 15, color: "#EF4444" },
-  { name: "Meat", value: 10, color: "#8B5CF6" },
-];
-
-const recentOrders = [
-  {
-    id: "ORD-006",
-    customer: "David Lee",
-    date: "2025-03-15",
-    total: 42.99,
-    status: "COMPLETED",
-  },
-  {
-    id: "ORD-007",
-    customer: "Sarah Johnson",
-    date: "2025-03-15",
-    total: 67.5,
-    status: "PENDING",
-  },
-  {
-    id: "ORD-008",
-    customer: "Michael Brown",
-    date: "2025-03-14",
-    total: 24.75,
-    status: "COMPLETED",
-  },
-  {
-    id: "ORD-009",
-    customer: "Emily Davis",
-    date: "2025-03-14",
-    total: 89.99,
-    status: "PENDING",
-  },
-  {
-    id: "ORD-010",
-    customer: "James Wilson",
-    date: "2025-03-13",
-    total: 35.25,
-    status: "CANCELLED",
-  },
-];
-
-const GrowthIndicator = (indicator: "up" | "down" | "same") => {
+const GrowthIndicator = (indicator: "up" | "down" | "same" = "same") => {
   if (indicator === "up") return <TrendingUp className="mr-1 h-4 w-4" />;
   if (indicator === "down") return <TrendingDown className="mr-1 h-4 w-4" />;
   if (indicator === "same") return <Minus className="mr-1 h-4 w-4" />;
 };
+// Get status badge color
 
-export function DashboardStats({ statistics }: { statistics: Statistics }) {
-  const [timeRange, setTimeRange] = useState("year");
+export function DashboardStats() {
+  const query = useQuery(queryOpts.statistics);
 
-  // Get status badge color
   const getStatusColor = (status: string) => {
     switch (status) {
       case "COMPLETED":
@@ -112,6 +51,23 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
     }
   };
 
+  if (!query.data) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[25dvh] w-full">
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[60dvh] w-full">
+          <Skeleton />
+          <Skeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
@@ -120,19 +76,19 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
           <CardHeader>
             <CardDescription>Total Revenue</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              ${prettyNumbers(Number(statistics.revenue.total_revenue))}
+              ${prettyNumbers(Number(query.data?.revenue.totalRevenue))}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
-                {GrowthIndicator(statistics.revenue.indicator)}
-                {Number(statistics.revenue.revenue_growth)}%
+                {GrowthIndicator(query.data?.revenue.indicator)}
+                {Number(query.data?.revenue.revenueGrowth)}%
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              Trending {statistics.revenue.indicator} this month{" "}
-              {GrowthIndicator(statistics.revenue.indicator)}
+              Trending {query.data?.revenue.indicator} this month{" "}
+              {GrowthIndicator(query.data?.revenue.indicator)}
             </div>
             <div className="text-muted-foreground">Compared to last month</div>
           </CardFooter>
@@ -141,41 +97,40 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
           <CardHeader>
             <CardDescription>Sales Today</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              ${prettyNumbers(Number(statistics.sales.sales_today))}
+              ${prettyNumbers(Number(query.data?.sales.salesToday))}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
-                {GrowthIndicator(statistics.sales.indicator)}
-                {Number(statistics.sales.sales_growth)}%
+                {GrowthIndicator(query.data?.sales.indicator)}
+                {Number(query.data?.sales.salesGrowth)}%
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              Trending {statistics.sales.indicator} this month{" "}
-              {GrowthIndicator(statistics.sales.indicator)}
+              Trending {query.data?.sales.indicator} this month{" "}
+              {GrowthIndicator(query.data?.sales.indicator)}
             </div>
             <div className="text-muted-foreground">Compared to yesterday</div>
           </CardFooter>
         </Card>
-
         <Card className="@container/card">
           <CardHeader>
             <CardDescription>Total Orders</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              ${prettyNumbers(Number(statistics.orders.total_orders))}
+              ${prettyNumbers(Number(query.data?.orders.totalOrders))}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
-                {GrowthIndicator(statistics.orders.indicator)}
-                {Number(statistics.orders.orders_growth)}%
+                {GrowthIndicator(query.data?.orders.indicator)}
+                {Number(query.data?.orders.ordersGrowth)}%
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              Trending {statistics.orders.indicator} this month{" "}
-              {GrowthIndicator(statistics.orders.indicator)}
+              Trending {query.data?.orders.indicator} this month{" "}
+              {GrowthIndicator(query.data?.orders.indicator)}
             </div>
             <div className="text-muted-foreground">Compared to last month</div>
           </CardFooter>
@@ -202,7 +157,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
             >
               <LineChart
                 accessibilityLayer
-                data={statistics.salesOverview.map(({ month, revenue }) => ({
+                data={query.data?.salesOverview.map(({ month, revenue }) => ({
                   month,
                   revenue: Number(revenue),
                 }))}
@@ -254,7 +209,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
             >
               <BarChart
                 accessibilityLayer
-                data={statistics.salesByCategory.map(
+                data={query.data?.salesByCategory.map(
                   ({ category, percentage }) => ({
                     category,
                     percentage: Number(percentage),
@@ -305,7 +260,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
               >
                 <BarChart
                   accessibilityLayer
-                  data={statistics.topSelling.map(({ name, sales }) => ({
+                  data={query.data?.topSelling.map(({ name, sales }) => ({
                     name,
                     sales: Number(sales),
                   }))}
@@ -337,7 +292,7 @@ export function DashboardStats({ statistics }: { statistics: Statistics }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {statistics.recentOrders.map((order) => (
+              {query.data?.recentOrders.map((order) => (
                 <div
                   key={order.id}
                   className="flex items-center justify-between border-b pb-2"

@@ -1,7 +1,7 @@
+import axios from "axios";
 import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-import { fetcher } from "./lib/axios";
 import { User } from "./types";
 
 export const userSchema = z.object({
@@ -14,6 +14,7 @@ type DbUser = {
   fullName: string;
   username: string;
   password: string;
+  accessToken: string;
   role: "MANAGER" | "ADMIN" | "STAFF";
 };
 
@@ -26,6 +27,7 @@ declare module "next-auth" {
       /** The user's postal address. */
       username: User["username"];
       role: User["role"];
+      accessToken: string;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -46,13 +48,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         try {
           const data = await userSchema.parseAsync(credentials);
-          const response = (await fetcher.post("/api/user/login", data)).data;
+          const response = (
+            await axios.post(
+              process.env.NEXT_PUBLIC_BACKEND_URL + "/api/user/login",
+              data,
+            )
+          ).data;
           const user = response.data as DbUser | null;
           if (!user) return null;
           return {
             name: user.fullName,
             username: user.username,
             role: user.role,
+            accessToken: response.data,
           };
         } catch (error) {
           console.error("Error parsing user credentials:", error);
@@ -69,6 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ...session.user,
           username: token.username,
           role: token.role,
+          accessToken: token.accessToken,
         },
       };
     },
@@ -79,6 +88,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.username = user.username;
         //@ts-ignore
         token.role = user.role;
+        //@ts-ignore
+        token.accessToken = user.accessToken;
       }
       return token;
     },

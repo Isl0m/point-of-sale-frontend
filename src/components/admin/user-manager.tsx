@@ -38,6 +38,7 @@ import { fetcher } from "@/lib/axios";
 import { User, UserRole } from "@/types";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Pencil, Search, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -140,14 +141,20 @@ export function UserManager() {
       return;
     }
 
-    await fetcher.put(`/api/user/${currentUser.id}`, currentUser);
+    try {
+      await fetcher.put(`/api/user/${currentUser.id}`, currentUser);
 
-    setIsEditDialogOpen(false);
+      setIsEditDialogOpen(false);
 
-    toast.success(
-      `User "${currentUser.username}" has been updated successfully`,
-    );
-    queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success(
+        `User ${currentUser.username} has been updated successfully`,
+      );
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        toast.error(`Failed to update user: ${e.message}`);
+      }
+    }
   };
 
   // Handle deleting a user

@@ -1,6 +1,7 @@
+import { signOut } from "@/auth";
 import AdminLayout from "@/components/admin/admin-layout";
 import { OrderDetails } from "@/components/admin/order-details";
-import { fetcher } from "@/lib/axios";
+import { serverFetcher } from "@/lib/axios.server";
 import { ApiResponse, ApiResponseSingle, Order, Product, User } from "@/types";
 
 interface OrderPageProps {
@@ -9,14 +10,25 @@ interface OrderPageProps {
   }>;
 }
 
+async function fetchOrderDetails(orderId: string) {
+  try {
+    const order = (await serverFetcher.get(`/api/order/${orderId}`))
+      .data as ApiResponseSingle<Order>;
+    const user = (
+      await serverFetcher.get(`/api/user/by-id/${order.data.userId}`)
+    ).data as ApiResponseSingle<User>;
+    const products = (await serverFetcher.get(`/api/product/get-all`))
+      .data as ApiResponse<Product>;
+
+    return { order, user, products };
+  } catch (e) {
+    return signOut();
+  }
+}
+
 export default async function OrderPage({ params }: OrderPageProps) {
   const { id: orderId } = await params;
-  const order = (await fetcher.get(`/api/order/${orderId}`))
-    .data as ApiResponseSingle<Order>;
-  const user = (await fetcher.get(`/api/user/by-id/${order.data.userId}`))
-    .data as ApiResponseSingle<User>;
-  const products = (await fetcher.get(`/api/product/get-all`))
-    .data as ApiResponse<Product>;
+  const { order, user, products } = await fetchOrderDetails(orderId);
 
   return (
     <AdminLayout title={`Order #${orderId}`}>

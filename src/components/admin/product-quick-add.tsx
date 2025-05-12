@@ -129,7 +129,7 @@ export function ProductQuickAdd() {
                     value={field.state.value}
                     onValueChange={(value) => field.handleChange(value)}
                   >
-                    <SelectTrigger id={field.name}>
+                    <SelectTrigger id={field.name} className="w-full">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>

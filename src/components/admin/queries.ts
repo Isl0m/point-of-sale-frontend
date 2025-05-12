@@ -1,6 +1,7 @@
 import { fetcher } from "@/lib/axios";
 import { ApiResponse, Category, Order, Product, User } from "@/types";
 import { queryOptions } from "@tanstack/react-query";
+import { getStatistics } from "./statistics-query";
 
 export const queryOpts = {
   users: queryOptions({
@@ -32,8 +33,11 @@ export const queryOpts = {
     queryFn: async () => {
       const response = await fetcher.get("/api/order/get-all");
       const data = response.data as ApiResponse<Order>;
-      console.log(data);
       return data.data;
     },
+  }),
+  statistics: queryOptions({
+    queryKey: ["statistics"],
+    queryFn: getStatistics,
   }),
 };
