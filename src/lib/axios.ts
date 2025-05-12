@@ -18,8 +18,6 @@ fetcher.interceptors.request.use(async (config) => {
 fetcher.interceptors.response.use(
   (config) => config,
   async (error) => {
-    const originalRequest = error.config;
-
     if (error.response.status === 401) {
       await signOut();
     }

@@ -20,6 +20,19 @@ export type Category = {
   deletedAt: string;
 };
 
+export type Warehouse = {
+  id: number;
+  name: string;
+  location: string;
+};
+
+export type ProductInventory = {
+  id: number;
+  productId: number;
+  warehouseId: number;
+  quantity: number;
+};
+
 export type Product = {
   id: number;
   name: string;

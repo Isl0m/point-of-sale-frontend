@@ -10,11 +10,13 @@ import {
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
+  Boxes,
   LogOut,
   Package,
   ShoppingCart,
   Tag,
   Users,
+  Warehouse,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -39,6 +41,17 @@ const menuItems = [
     link: "/admin/products",
     Icon: Package,
   },
+  {
+    title: "Warehouse",
+    link: "/admin/warehouse",
+    Icon: Warehouse,
+  },
+  {
+    title: "Inventory",
+    link: "/admin/inventory",
+    Icon: Boxes,
+  },
+
   {
     title: "Orders",
     link: "/admin/orders",

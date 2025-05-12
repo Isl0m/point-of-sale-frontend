@@ -65,7 +65,11 @@ export function ProductManager() {
       toast.error("Invalid product data");
       return;
     }
-    await fetcher.put(`/api/product/${currentProduct.id}`, currentProduct);
+    await fetcher.put(`/api/product/${currentProduct.id}`, {
+      ...result.data,
+      categoryId: Number(result.data.category),
+      warehouseId: Number(result.data.warehouse),
+    });
     setIsEditDialogOpen(false);
     toast.success(
       `Product "${currentProduct.name}" has been updated successfully`,

@@ -28,12 +28,22 @@ import { queryOpts } from "./queries";
 
 export const productSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
-  category: z.string(),
+  category: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && Number.isInteger(val) && val > 0),
+  warehouse: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && Number.isInteger(val) && val > 0),
   price: z
     .string()
     .min(1, "Price is required")
     .transform(Number)
-    .refine((val) => !isNaN(val) && val > 0, "Price must be a positive number"),
+    .refine(
+      (val) => !isNaN(val) && Number.isInteger(val) && val > 0,
+      "Price must be a positive number",
+    ),
   description: z.string(),
   serial: z.string(),
 });
@@ -43,6 +53,7 @@ export function ProductQuickAdd() {
     defaultValues: {
       name: "",
       category: "",
+      warehouse: "",
       price: "",
       description: "",
       serial: "",
@@ -52,6 +63,7 @@ export function ProductQuickAdd() {
         name: value.name,
         description: value.description,
         categoryId: Number(value.category),
+        warehouseId: Number(value.warehouse),
         price: Number(value.price),
         serial: value.serial,
       });
@@ -62,11 +74,13 @@ export function ProductQuickAdd() {
   });
 
   const categoriesQuery = useQuery(queryOpts.categories);
+  const warehouseQuery = useQuery(queryOpts.warehouse);
 
   const mutation = useMutation({
     mutationFn: async (data: {
       name: string;
       categoryId: number;
+      warehouseId: number;
       price: number;
       description: string;
       serial: string;
@@ -139,6 +153,34 @@ export function ProductQuickAdd() {
                           value={category.id.toString()}
                         >
                           {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
+            />
+          </div>
+          <div className="space-y-2">
+            <form.Field
+              name="warehouse"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>Warehouse</Label>
+                  <Select
+                    value={field.state.value}
+                    onValueChange={(value) => field.handleChange(value)}
+                  >
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder="Select warehouse" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {warehouseQuery.data?.map((warehouse) => (
+                        <SelectItem
+                          key={warehouse.id}
+                          value={warehouse.id.toString()}
+                        >
+                          {warehouse.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

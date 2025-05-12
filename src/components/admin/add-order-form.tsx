@@ -28,6 +28,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { queryOpts } from "./queries";
 
 type OrderItem = {
@@ -41,6 +48,7 @@ type OrderItem = {
 type Order = {
   userId: number;
   status: string;
+  warehouseId: number;
   items: { productId: number; quantity: number }[];
 };
 
@@ -48,6 +56,10 @@ export function AddOrderForm() {
   const router = useRouter();
   const { data: session } = useSession();
   const productsQuery = useQuery(queryOpts.products);
+  const warehouseQuery = useQuery(queryOpts.warehouse);
+
+  // Warehouse
+  const [warehouse, setWarehouse] = useState("");
 
   // Order items
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
@@ -141,6 +153,11 @@ export function AddOrderForm() {
     e.preventDefault();
     const username = session?.user?.username;
 
+    if (!warehouse) {
+      toast.error("Please select warehouse");
+      return;
+    }
+
     const users = (await fetcher.get(`/api/user/by-username/${username}`))
       .data as ApiResponse<User>;
     const [user] = users.data;
@@ -159,6 +176,7 @@ export function AddOrderForm() {
     mutation.mutate({
       userId: user.id,
       status: "PENDING",
+      warehouseId: Number(warehouse),
       items: orderItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -330,7 +348,27 @@ export function AddOrderForm() {
 
               {/* Order Total */}
               {orderItems.length > 0 && (
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-between pt-4">
+                  <div>
+                    <Select
+                      value={warehouse}
+                      onValueChange={(value) => setWarehouse(value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select warehouse" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {warehouseQuery.data?.map((warehouse) => (
+                          <SelectItem
+                            key={warehouse.id}
+                            value={warehouse.id.toString()}
+                          >
+                            {warehouse.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="bg-muted/30 px-4 py-2 rounded-md">
                     <div className="flex items-center gap-4">
                       <span className="font-medium">Total:</span>
